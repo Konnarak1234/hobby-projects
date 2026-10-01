@@ -1,5 +1,6 @@
 
 import 'package:flutter/material.dart';
+import 'package:gallery_hub_mobile_flutter/services/login.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -12,6 +13,7 @@ class _LoginScreenState extends State<LoginScreen> {
   final  _formKey = GlobalKey<FormState>();
   late String email;
   late String password;
+  final loginService = LoginService();
 
   @override
   Widget build(context) {
@@ -73,9 +75,12 @@ class _LoginScreenState extends State<LoginScreen> {
                     SizedBox(height: 20,),
                     SizedBox(
                       width: MediaQuery.of(context).size.width * 0.8,
-                      child: FilledButton(onPressed: () {
+                      child: FilledButton(onPressed: () async{
                         if(_formKey.currentState!.validate()) {
                           _formKey.currentState!.save();
+                          
+                          // attempt to login user
+                          loginService.loginUser(email, password);
                         }
                       }, 
                       child: Text('Login')),
@@ -84,9 +89,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 )
               ),
               SizedBox(height: 10,),
-              TextButton(onPressed: () {
-                
-              }, child: Text('Signup', textAlign: TextAlign.center,))
+              TextButton(onPressed: () {}, child: Text('Signup', textAlign: TextAlign.center,))
             ],
           ),
         ),
