@@ -15,10 +15,19 @@ final theme = ThemeData(
     focusedBorder: OutlineInputBorder(
       borderSide: BorderSide(color: Colors.blue, width: 1)
     ),
-    // errorBorder: OutlineInputBorder(
-    //   borderSide: BorderSide(color: Colors.red, width: 1)
-    // ),
-  )
+    errorBorder: OutlineInputBorder(
+      borderSide: BorderSide(color: Colors.red.shade200, width: 1)
+    ),
+    focusedErrorBorder: OutlineInputBorder(
+      borderSide: BorderSide(color: Colors.red, width: 1)
+    ),
+  ),
+  textTheme: TextTheme().copyWith(
+    titleLarge: TextStyle(
+      fontWeight: FontWeight.bold,
+      fontSize: 24,
+    )
+  ),
 );
 void main() {
   return runApp(MaterialApp(
