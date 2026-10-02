@@ -1,6 +1,6 @@
 
 import 'package:flutter/material.dart';
-import 'package:gallery_hub_mobile_flutter/services/login.dart';
+import 'package:gallery_hub_mobile_flutter/services/auth_service.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -13,7 +13,8 @@ class _LoginScreenState extends State<LoginScreen> {
   final  _formKey = GlobalKey<FormState>();
   late String email;
   late String password;
-  final loginService = LoginService();
+  String? error;
+  final authService = AuthService();
 
   @override
   Widget build(context) {
@@ -27,6 +28,8 @@ class _LoginScreenState extends State<LoginScreen> {
             mainAxisSize: MainAxisSize.min,
             children: [
               Text('Welcome Gallery Hub', style: Theme.of(context).textTheme.titleLarge,),
+              if(error != null)
+                Text(error!, style: TextStyle(color:Colors.red)),
               SizedBox(height: 40 ),
               Form(
                 key: _formKey,
@@ -78,9 +81,16 @@ class _LoginScreenState extends State<LoginScreen> {
                       child: FilledButton(onPressed: () async{
                         if(_formKey.currentState!.validate()) {
                           _formKey.currentState!.save();
-                          
+                          print('hello');
                           // attempt to login user
-                          loginService.loginUser(email, password);
+                          if(await authService.loginUser(email, password)) {
+                            print('hello');
+                          } else {
+                            print('hello');
+                            setState(() {
+                              error = authService.errorMessage;
+                            });
+                          }
                         }
                       }, 
                       child: Text('Login')),

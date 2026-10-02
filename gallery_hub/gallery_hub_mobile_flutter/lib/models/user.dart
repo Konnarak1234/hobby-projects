@@ -10,4 +10,5 @@ class User {
   final String name;
   final String email;
   String authToken;
+
 }
