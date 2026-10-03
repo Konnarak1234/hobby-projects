@@ -1,9 +1,12 @@
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class LocalStorageService {
   static const String userIdKey = 'user_id';
   static const String userNameKey = 'user_name';
   static const String tokenKey = 'token';
+
+  final FlutterSecureStorage _secureStorage = const FlutterSecureStorage();
 
   Future<void> saveUser({
     required int userId,
@@ -12,9 +15,12 @@ class LocalStorageService {
   }) async {
     final prefs = await SharedPreferences.getInstance();
 
+    // Normal data
     await prefs.setInt(userIdKey, userId);
     await prefs.setString(userNameKey, name);
-    await prefs.setString(tokenKey, token);
+
+    // Sensitive data
+    await _secureStorage.write(key: tokenKey, value: token);
   }
 
   Future<int?> getUserId() async {
@@ -30,9 +36,7 @@ class LocalStorageService {
   }
 
   Future<String?> getToken() async {
-    final prefs = await SharedPreferences.getInstance();
-
-    return prefs.getString(tokenKey);
+    return await _secureStorage.read(key: tokenKey);
   }
 
   Future<void> clearUser() async {
@@ -40,6 +44,7 @@ class LocalStorageService {
 
     await prefs.remove(userIdKey);
     await prefs.remove(userNameKey);
-    await prefs.remove(tokenKey);
+
+    await _secureStorage.delete(key: tokenKey);
   }
 }

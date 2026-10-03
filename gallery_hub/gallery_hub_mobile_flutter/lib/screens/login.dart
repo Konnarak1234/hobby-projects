@@ -1,6 +1,8 @@
 
 import 'package:flutter/material.dart';
 import 'package:gallery_hub_mobile_flutter/services/auth_service.dart';
+import 'package:gallery_hub_mobile_flutter/services/local_storage_service.dart';
+import 'package:gallery_hub_mobile_flutter/utils/constants.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -15,6 +17,9 @@ class _LoginScreenState extends State<LoginScreen> {
   late String password;
   String? error;
   final authService = AuthService();
+  final localStorageService = LocalStorageService();
+  String? userName;
+
 
   @override
   Widget build(context) {
@@ -27,10 +32,31 @@ class _LoginScreenState extends State<LoginScreen> {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Text('Welcome Gallery Hub', style: Theme.of(context).textTheme.titleLarge,),
+              Text("Welcome to ${ userName ?? AppConstants.appName}", style: Theme.of(context).textTheme.titleLarge,),
+              SizedBox(
+                height: 10,
+              ),
               if(error != null)
-                Text(error!, style: TextStyle(color:Colors.red)),
-              SizedBox(height: 40 ),
+                Container(
+                  padding: EdgeInsets.symmetric(
+                    vertical: 14,
+                    horizontal: 16,
+                  ),
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(colors: [
+                      Colors.red,
+                      Colors.red.shade400,
+                      ],
+                      begin: Alignment.topRight,
+                      end: Alignment.bottomRight,
+                    ),
+                    
+                  ),
+                  width: MediaQuery.of(context).size.width * 0.8,
+                  child : Text(error!, style: TextStyle(color: Colors.white),),
+                ),
+                
+              SizedBox(height: 30 ),
               Form(
                 key: _formKey,
                 child: Column(
@@ -81,12 +107,11 @@ class _LoginScreenState extends State<LoginScreen> {
                       child: FilledButton(onPressed: () async{
                         if(_formKey.currentState!.validate()) {
                           _formKey.currentState!.save();
-                          print('hello');
+                          error = null;
                           // attempt to login user
                           if(await authService.loginUser(email, password)) {
-                            print('hello');
+                            setState(() {});
                           } else {
-                            print('hello');
                             setState(() {
                               error = authService.errorMessage;
                             });
@@ -99,7 +124,13 @@ class _LoginScreenState extends State<LoginScreen> {
                 )
               ),
               SizedBox(height: 10,),
-              TextButton(onPressed: () {}, child: Text('Signup', textAlign: TextAlign.center,))
+              TextButton(onPressed: () async{
+                userName = await localStorageService.getUserName();
+                setState(() {
+                  
+                });
+               
+              }, child: Text('Signup', textAlign: TextAlign.center,))
             ],
           ),
         ),
