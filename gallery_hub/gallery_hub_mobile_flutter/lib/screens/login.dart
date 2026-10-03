@@ -1,5 +1,6 @@
 
 import 'package:flutter/material.dart';
+import 'package:gallery_hub_mobile_flutter/screens/home.dart';
 import 'package:gallery_hub_mobile_flutter/services/auth_service.dart';
 import 'package:gallery_hub_mobile_flutter/services/local_storage_service.dart';
 import 'package:gallery_hub_mobile_flutter/utils/constants.dart';
@@ -13,12 +14,13 @@ class LoginScreen extends StatefulWidget {
 
 class _LoginScreenState extends State<LoginScreen> {
   final  _formKey = GlobalKey<FormState>();
-  late String email;
+  String email = '';
   late String password;
   String? error;
   final authService = AuthService();
   final localStorageService = LocalStorageService();
-  String? userName;
+  bool isLoading = false;
+
 
 
   @override
@@ -29,10 +31,10 @@ class _LoginScreenState extends State<LoginScreen> {
           color: Colors.lightGreenAccent,
         ),
         child: Center(
-          child: Column(
+          child: isLoading ? Center(child: CircularProgressIndicator()) :  Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Text("Welcome to ${ userName ?? AppConstants.appName}", style: Theme.of(context).textTheme.titleLarge,),
+              Text("Welcome to ${AppConstants.appName}", style: Theme.of(context).textTheme.titleLarge,),
               SizedBox(
                 height: 10,
               ),
@@ -108,14 +110,20 @@ class _LoginScreenState extends State<LoginScreen> {
                         if(_formKey.currentState!.validate()) {
                           _formKey.currentState!.save();
                           error = null;
+
+                          setState(() {
+                            isLoading = true;
+                          });
                           // attempt to login user
                           if(await authService.loginUser(email, password)) {
-                            setState(() {});
+                            Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (ctx) => HomeScreen()));
                           } else {
-                            setState(() {
-                              error = authService.errorMessage;
-                            });
+                            error = authService.errorMessage;
                           }
+
+                          setState(() {
+                            isLoading = false;
+                          });
                         }
                       }, 
                       child: Text('Login')),
@@ -124,13 +132,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 )
               ),
               SizedBox(height: 10,),
-              TextButton(onPressed: () async{
-                userName = await localStorageService.getUserName();
-                setState(() {
-                  
-                });
-               
-              }, child: Text('Signup', textAlign: TextAlign.center,))
+              TextButton(onPressed: () {}, child: Text('Signup', textAlign: TextAlign.center,))
             ],
           ),
         ),
