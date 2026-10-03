@@ -19,12 +19,42 @@ class _LoginScreenState extends State<LoginScreen> {
   String? error;
   final authService = AuthService();
   final localStorageService = LocalStorageService();
-  bool isLoading = false;
+  bool isLoading = true;
+  bool isAuth = false;
 
+  void checkForAuth() async{
+    final token = await localStorageService.getToken();
+
+    
+    
+
+    isAuth = token != null;
+
+    Future.delayed(Duration(seconds: 2), () {
+      // check if the current widget is dispose yet
+      // 1. if dispose: return; and stop execute to avoid using context
+      // 2. else: continue run
+      if(!mounted) return;
+      
+      if(isAuth) {
+        Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (_)=>HomeScreen()));
+      } else {
+        setState(() {
+          isLoading = false;
+        });
+      }
+    });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    checkForAuth();
+  }
 
 
   @override
-  Widget build(context) {
+  Widget build(BuildContext context) {
     return Scaffold(
       body: Container(
         decoration: BoxDecoration(
@@ -109,21 +139,27 @@ class _LoginScreenState extends State<LoginScreen> {
                       child: FilledButton(onPressed: () async{
                         if(_formKey.currentState!.validate()) {
                           _formKey.currentState!.save();
-                          error = null;
+                          
 
                           setState(() {
                             isLoading = true;
+                            error = null;
                           });
-                          // attempt to login user
-                          if(await authService.loginUser(email, password)) {
-                            Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (ctx) => HomeScreen()));
-                          } else {
-                            error = authService.errorMessage;
-                          }
 
-                          setState(() {
-                            isLoading = false;
-                          });
+                          final success = await authService.loginUser(email, password);
+
+                          if(!mounted) return;
+
+                          // attempt to login user
+                          if(success) {
+                            Navigator.of(this.context).pushReplacement(MaterialPageRoute(builder: (ctx) => HomeScreen()));
+                          } else {
+                            setState(() {
+                              isLoading = false;
+                              error = authService.errorMessage;
+                            });
+                           
+                          }
                         }
                       }, 
                       child: Text('Login')),
