@@ -20,6 +20,13 @@ use Illuminate\Support\Facades\Route;
 // 2. issue the expiration time directly, when create token, by specify the third argument using laravel carbon
 
 Route::post('/login', function (Request $request) {
+
+    // if validation fails, 422 status will return with json message 
+    $request->validate([
+        'email' => 'required|email',
+        'password' => 'required|min:8'
+    ]);
+
     
     $user = User::where('email', $request->input('email'))->first();
 
