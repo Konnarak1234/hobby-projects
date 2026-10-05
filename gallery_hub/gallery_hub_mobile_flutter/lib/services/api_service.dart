@@ -17,14 +17,17 @@ class ApiService {
     }
   }
 
-  Future<http.Response> post(String endpoint, Map<String, dynamic> data) async {
+  Future<http.Response> post(
+    String endpoint,
+    Map<String, dynamic> data, {
+    Map<String, String>? header,
+  }) async {
     try {
       final response = await http.post(
         Uri.parse('$baseUrl$endpoint'),
-        headers: {
-          'Content-Type': 'application/json',
-          'Accept': 'application/json',
-        },
+        headers:
+            header ??
+            {'Content-Type': 'application/json', 'Accept': 'application/json'},
         body: jsonEncode(data),
       );
 
@@ -35,4 +38,48 @@ class ApiService {
       rethrow;
     }
   }
+
+  Future<http.StreamedResponse> multipartPost(
+    String endpoint, {
+    required Map<String, String> fields,
+    required Map<String, String> headers,
+    String? fileField,
+    String? filePath,
+  }) async {
+    final uri = Uri.parse(
+      '$baseUrl/$endpoint',
+    );
+
+    final request = http.MultipartRequest(
+      'POST',
+      uri,
+    );
+
+    request.headers.addAll(headers);
+    // add all json-like fields data
+    request.fields.addAll(fields);
+
+    // add file-like data to the field
+    if (fileField != null && filePath != null) {
+      request.files.add(
+        await http.MultipartFile.fromPath(
+          fileField,
+          filePath,
+        ),
+      );
+    }
+
+    try {
+      final response = await request.send();
+
+      return response;
+
+    } on SocketException {
+      throw Exception('No internet');
+    } catch (e) {
+      rethrow;
+    }
+  
+  }
+
 }
