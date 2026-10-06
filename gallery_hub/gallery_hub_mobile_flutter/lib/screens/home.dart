@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:gallery_hub_mobile_flutter/screens/create_album.dart';
+import 'package:gallery_hub_mobile_flutter/screens/profile.dart';
 import 'package:gallery_hub_mobile_flutter/screens/upload_photo.dart';
 import 'package:gallery_hub_mobile_flutter/screens/view_album.dart';
 import 'package:gallery_hub_mobile_flutter/utils/constants.dart';
@@ -80,7 +81,8 @@ class _HomeScreenState extends State<HomeScreen> {
       body: <Widget>[
         ViewAlbumScreen(),
         CreateAlbumScreen(),
-        UploadPhotoScreen(albumUuid: 'asfafda', albumTitle: 'hello')
+        UploadPhotoScreen(albumUuid: 'asfafda', albumTitle: 'hello'),
+        ProfileScreen(),
       ][_selectedIndex],
 
       // ----------------------------------------------------------

@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
+import 'package:gallery_hub_mobile_flutter/utils/constants.dart';
 import 'package:http/http.dart' as http;
 
 class ApiService {
@@ -39,7 +40,7 @@ class ApiService {
     }
   }
 
-  Future<http.StreamedResponse> multipartPost(
+  Future<http.Response> multipartPost(
     String endpoint, {
     required Map<String, String> fields,
     required Map<String, String> headers,
@@ -47,7 +48,7 @@ class ApiService {
     String? filePath,
   }) async {
     final uri = Uri.parse(
-      '$baseUrl/$endpoint',
+      '$baseUrl$endpoint',
     );
 
     final request = http.MultipartRequest(
@@ -70,7 +71,9 @@ class ApiService {
     }
 
     try {
-      final response = await request.send();
+      final streamResponse = await request.send().timeout(const Duration(seconds: AppConstants.requestTimeOut));
+      final response = await http.Response.fromStream(streamResponse);
+
 
       return response;
 

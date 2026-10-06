@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:gallery_hub_mobile_flutter/models/album.dart';
 import 'package:gallery_hub_mobile_flutter/services/api_service.dart';
 import 'package:gallery_hub_mobile_flutter/services/local_storage_service.dart';
@@ -30,21 +32,28 @@ class AlbumService {
         filePath: album.coverImage.path,
       );
 
+      final bodyData = jsonDecode(response.body) as Map<String, dynamic>;
+
       if(response.statusCode == 200) {
         return true;
       }
 
       if(response.statusCode == 401) {
-        error = 'Unauthorize';
+        error = bodyData['message'];
       } 
 
-      if(response.statusCode == 422) {
-        error = 'Invalid input';
+      else if(response.statusCode == 422) {
+        error = bodyData['message'];
+      } 
+
+      else {
+        error = bodyData['message'];
       }
 
       return false;
 
     } catch (e) {
+      print(e.toString());
       error = e.toString();
       return false;
     }

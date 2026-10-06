@@ -1,6 +1,5 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:gallery_hub_mobile_flutter/models/album.dart';
 import 'package:gallery_hub_mobile_flutter/screen_models/create_album_screen_model.dart';
 import 'package:gallery_hub_mobile_flutter/widgets/build_cover_image.dart';
 import 'package:image_picker/image_picker.dart';
@@ -71,15 +70,10 @@ class _CreateAlbumScreenState extends State<CreateAlbumScreen> {
         createAlbumScreenModel.title =  _titleController.text.trim();
         createAlbumScreenModel.location =  _locationController.text.trim();
         createAlbumScreenModel.description =  _descriptionController.text.trim();
-      // Later:
-      //
-      // await albumViewModel.createAlbum(
-      //   title: _titleController.text.trim(),
-      //   description:
-      //       _descriptionController.text.trim(),
-      //   location: _locationController.text.trim(),
-      //   coverImage: _coverImage,
-      // );
+
+      // start creating new album
+      await createAlbumScreenModel.createAlbum();
+
 
       // Temporary simulation
       await Future.delayed(const Duration(seconds: 2));
@@ -87,18 +81,22 @@ class _CreateAlbumScreenState extends State<CreateAlbumScreen> {
       if (!mounted) return;
 
       _showSuccessDialog();
+
     } catch (e) {
       if (!mounted) return;
 
       ScaffoldMessenger.of(
         context,
       ).showSnackBar(SnackBar(content: Text('Failed to create album: $e')));
+
     } finally {
+
       if (mounted) {
         setState(() {
           _isLoading = false;
         });
       }
+
     }
   }
 
