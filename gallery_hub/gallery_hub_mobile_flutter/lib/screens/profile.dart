@@ -3,6 +3,8 @@ import 'package:gallery_hub_mobile_flutter/services/local_storage_service.dart';
 
 class ProfileScreen extends StatelessWidget {
 
+  const ProfileScreen({super.key});
+
   void logout() async{
       final localStorageService = LocalStorageService();
       localStorageService.clearUser();

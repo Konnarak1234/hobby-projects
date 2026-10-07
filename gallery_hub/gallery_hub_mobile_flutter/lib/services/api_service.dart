@@ -1,16 +1,28 @@
 import 'dart:convert';
 import 'dart:io';
+import 'package:gallery_hub_mobile_flutter/services/local_storage_service.dart';
 import 'package:gallery_hub_mobile_flutter/utils/constants.dart';
 import 'package:http/http.dart' as http;
 
 class ApiService {
-  final String baseUrl = 'http://10.0.2.2:8000/api/';
+  final String baseUrl = AppConstants.baseUrl;
 
   Future<http.Response> get(String endpoint) async {
+
+    final localStorageService = LocalStorageService();
+    String token = (await localStorageService.getToken())!;
+
     try {
-      final response = await http.get(Uri.parse('$baseUrl$endpoint'));
+      final response = await http.get(
+        Uri.parse('$baseUrl$endpoint'),
+        headers: {
+          'Accept': 'application/json',
+          'Authorization': 'Bearer $token',
+        },
+      ).timeout(const Duration(seconds: AppConstants.requestTimeOut));
 
       return response;
+
     } on SocketException {
       throw Exception('No internet');
     } catch (e) {
