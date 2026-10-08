@@ -4,6 +4,8 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Str;
 
 class Album extends Model
@@ -25,5 +27,17 @@ class Album extends Model
         static::creating(function (Album $album) {
             $album->uuid ??= (string) Str::uuid();
         });
+    }
+
+    // make Album model relation with Photo model (1 -> many)
+    public function photos(): HasMany
+    {
+        return $this->hasMany(Photo::class);
+    }
+
+    // album belong to one user
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class);
     }
 }

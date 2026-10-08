@@ -3,10 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Models\Album;
+use App\Models\Photo;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Str;
 
 // some essential methods use to work with Laravel's storage::disk()
 // suppose we work Laravel local's storage disk, which path point to 'storage/app/private' in app/filesystem.php
@@ -25,6 +25,33 @@ use Illuminate\Support\Str;
 
 class AlbumController extends Controller
 { 
+    public function index(Request $request) {
+        // solving N + 1 query problem with agregate query, or eager loading with Laravel with(), withCount() and withMax() method
+        $albums = Album::query()
+        ->where('user_id', $request->user()->id)
+        ->withCount('photos')
+        ->withMax('photos', 'updated_at')
+        ->latest()
+        ->get()
+        ->map(function (Album $album) {
+            return [
+                'uuid' => $album->uuid,
+                'title' => $album->title,
+                'description' => $album->description,
+                'location' => $album->location,
+                'updated' =>
+                    $album->photos_max_updated_at
+                    ?? $album->updated_at,
+                'photoCount' => $album->photos_count,
+            ];
+        });
+
+        return response()->json([
+            'message' => 'Albums retrieved successfully.',
+            'albums' => $albums,
+        ]);
+    }
+
     public function store(Request $request) {
         $validated = $request->validate([
             'title' => 'required|string|max:255',
