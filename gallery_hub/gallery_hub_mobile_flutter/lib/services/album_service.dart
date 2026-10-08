@@ -20,25 +20,22 @@ class AlbumService {
 
       if (response.statusCode >= 200 && response.statusCode < 300) {
         albums =
-            bodyData['albums'].Map(
-                  (a) => Album(
-                    title: a.title,
-                    uuid: a.uuid,
-                    description: a.description,
-                    location: a.location,
-                    updated: a.lastUpdated,
-                    photoCount: a.photoCount,
-                    image: '${AppConstants.baseUrl}${a.uuid}/albums',
-                  ),
-                )
-                as List<Album>;
+            bodyData['albums'].map<Album>(
+                (Map<String, dynamic> a) => Album.fromJson(a),
+            ).toList();
+
+        print(albums);
         return true;
       }
 
       if (response.statusCode == 401) {
         error = bodyData['message'];
       }
-      print('error: $error');
+
+      if(response.statusCode == 404) {
+        error = bodyData['message'];
+      }
+      print('error: ${response.body}');
 
       return false;
 

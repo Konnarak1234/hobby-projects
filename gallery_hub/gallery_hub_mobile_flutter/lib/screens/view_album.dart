@@ -71,94 +71,103 @@ class _ViewAlbumScreenState extends State<ViewAlbumScreen> {
   @override
   Widget build(BuildContext context) {
     return SafeArea(
-      child: viewAlbumScreenModel.isLoading ? const Center(child: CircularProgressIndicator()) : CustomScrollView(
-        slivers: [
-          // ----------------------------------------------------
-          // HEADER
-          // ----------------------------------------------------
-          SliverToBoxAdapter(
-            child: Padding(
-              padding: const EdgeInsets.fromLTRB(20, 28, 20, 18),
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  const Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'My Albums',
-                          style: TextStyle(
-                            fontSize: 28,
-                            fontWeight: FontWeight.bold,
-                            color: Color(0xFF263238),
-                          ),
-                        ),
+      child:
+          viewAlbumScreenModel.isLoading
+              ? const Center(child: CircularProgressIndicator())
+              : CustomScrollView(
+                slivers: [
+                  // ----------------------------------------------------
+                  // HEADER
+                  // ----------------------------------------------------
+                  SliverToBoxAdapter(
+                    child: Padding(
+                      padding: const EdgeInsets.fromLTRB(20, 28, 20, 18),
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          const Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  'My Albums',
+                                  style: TextStyle(
+                                    fontSize: 28,
+                                    fontWeight: FontWeight.bold,
+                                    color: Color(0xFF263238),
+                                  ),
+                                ),
 
-                        SizedBox(height: 5),
+                                SizedBox(height: 5),
 
-                        Text(
-                          'Your memories, organized beautifully',
-                          style: TextStyle(
-                            fontSize: 16,
-                            color: Color(0xFF78909C),
+                                Text(
+                                  'Your memories, organized beautifully',
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    color: Color(0xFF78909C),
+                                  ),
+                                ),
+                              ],
+                            ),
                           ),
-                        ),
-                      ],
+
+                          const SizedBox(width: 10),
+
+                          FilledButton.icon(
+                            onPressed: () {
+                              // TODO: Create new album
+                            },
+                            style: FilledButton.styleFrom(
+                              backgroundColor: const Color(0xFF208F8B),
+                              foregroundColor: Colors.white,
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 15,
+                                vertical: 13,
+                              ),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(30),
+                              ),
+                            ),
+                            icon: const Icon(Icons.add),
+                            label: const Text(
+                              'New Album',
+                              style: TextStyle(fontWeight: FontWeight.w600),
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
 
-                  const SizedBox(width: 10),
+                  // ----------------------------------------------------
+                  // ALBUM LIST
+                  // ----------------------------------------------------
+                  SliverPadding(
+                    padding: const EdgeInsets.fromLTRB(20, 0, 20, 100),
+                    sliver:
+                        viewAlbumScreenModel.albums.isEmpty
+                            ? const SliverToBoxAdapter(
+                              child: Center(child: Text('No Albums')),
+                            )
+                            : SliverList.builder(
+                              itemCount: viewAlbumScreenModel.albums.length,
+                              itemBuilder: (context, index) {
+                                final album =
+                                    viewAlbumScreenModel.albums[index];
 
-                  FilledButton.icon(
-                    onPressed: () {
-                      // TODO: Create new album
-                    },
-                    style: FilledButton.styleFrom(
-                      backgroundColor: const Color(0xFF208F8B),
-                      foregroundColor: Colors.white,
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 15,
-                        vertical: 13,
-                      ),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(30),
-                      ),
-                    ),
-                    icon: const Icon(Icons.add),
-                    label: const Text(
-                      'New Album',
-                      style: TextStyle(fontWeight: FontWeight.w600),
-                    ),
+                                return AlbumCard(
+                                  title: album.title!,
+                                  description: album.description ?? '',
+                                  photoCount: album.photoCount!,
+                                  updated: album.updated.toString(),
+                                  imageUrl: album.image!,
+                                  onTap: () {},
+                                );
+                              },
+                            ),
                   ),
                 ],
               ),
-            ),
-          ),
-
-          // ----------------------------------------------------
-          // ALBUM LIST
-          // ----------------------------------------------------
-          SliverPadding(
-            padding: const EdgeInsets.fromLTRB(20, 0, 20, 100),
-            sliver: viewAlbumScreenModel.albums.isEmpty ? const SliverToBoxAdapter(child:  Center(child: Text('No Albums'))) : SliverList.builder(
-              itemCount: viewAlbumScreenModel.albums.length,
-              itemBuilder: (context, index) {
-                final album = viewAlbumScreenModel.albums[index];
-
-                return AlbumCard(
-                  title: album.title!,
-                  description: album.description ?? '',
-                  photoCount: album.photoCount!,
-                  updated: album.updated!,
-                  imageUrl: album.image!,
-                  onTap: () {},
-                );
-              },
-            ),
-          ),
-        ],
-      ),
     );
   }
 }

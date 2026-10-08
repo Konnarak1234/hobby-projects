@@ -1,5 +1,7 @@
 import 'dart:io';
 
+import 'package:gallery_hub_mobile_flutter/utils/constants.dart';
+
 class Album {
   Album({
     this.coverImage,
@@ -21,6 +23,22 @@ class Album {
   String? uuid;
   String? image;
   int? photoCount;
-  String? updated;
+  DateTime? updated;
+
+  factory Album.fromJson(Map<String, dynamic> json) {
+    return Album(
+      uuid: json['uuid'] as String,
+      title: json['title'] as String,
+      description: json['description'] as String?,
+      location: json['location'] as String?,
+      updated: DateTime.parse(
+        json['updated'] as String,
+      ),
+      photoCount: json['photoCount'] as int,
+      image:
+          '${AppConstants.baseUrl}'
+          'albums/${json['uuid']}/cover',
+    );
+  }
   
 }
