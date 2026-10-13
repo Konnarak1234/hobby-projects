@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Album;
 use App\Models\Photo;
+use App\Models\User;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
@@ -28,8 +29,8 @@ class AlbumController extends Controller
 { 
     public function index(Request $request) {
         // solving N + 1 query problem with agregate query, or eager loading with Laravel with(), withCount() and withMax() method
-        $albums = Album::query()
-        ->where('user_id', $request->user()->id)
+        // we can use $request->user()->albums() to return all albums associated with specific user, by defining the Eloquent relationship's hasMany() in User
+        $albums = $request->user()->albums()
         ->withCount('photos')
         ->withMax('photos', 'updated_at')
         ->latest()

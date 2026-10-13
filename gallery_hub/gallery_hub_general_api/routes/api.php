@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AlbumController;
+use App\Http\Controllers\PhotoController;
 use App\Models\Album;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -53,3 +54,4 @@ Route::post('albums', [AlbumController::class, 'store'])->middleware('auth:sanct
 Route::get('albums/{album:uuid}/cover', [AlbumController::class, 'showCover'])->middleware('auth:sanctum');
 
 
+Route::get('photos/{album:uuid}', [PhotoController::class, 'index'])->middleware('auth:sanctum');

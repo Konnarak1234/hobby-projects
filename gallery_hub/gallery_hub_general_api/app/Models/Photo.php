@@ -4,9 +4,16 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Str;
 
 class Photo extends Model
 {
+    protected static function booted(): void
+    {
+        static::creating(function (Photo $photo) {
+            $photo->uuid ??= (string) Str::uuid();
+        });
+    }
     
     //
     public function album(): BelongsTo
