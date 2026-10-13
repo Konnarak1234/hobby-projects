@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Album;
 use App\Models\Photo;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
@@ -50,6 +51,34 @@ class AlbumController extends Controller
             'message' => 'Albums retrieved successfully.',
             'albums' => $albums,
         ]);
+    }
+
+    public function showCover(Album $album) {
+
+        // 1. Check album ownership, using Laravel policy
+        Gate::authorize('view', $album);
+
+        // 2. Check whether the album has a cover
+        if (!$album->cover_image) {
+            return response()->json([
+                'message' => 'This album has no cover image.',
+            ], 404);
+        }
+
+        // 3. Select the correct storage disk
+        /** @var FilesystemAdapter $disk */
+        //This helps Intelephense understand that $disk is a FilesystemAdapter, which implements the response() method.
+        $disk = Storage::disk('local');
+
+        // 4. Check whether the file exists
+        if (!$disk->exists($album->cover_image)) {
+            return response()->json([
+                'message' => 'Cover image not found.',
+            ], 404);
+        }
+
+        // 5. Return the image
+        return $disk->response($album->cover_image); // response()->file(Storage:disk('local')->path($album->cover_image))
     }
 
     public function store(Request $request) {

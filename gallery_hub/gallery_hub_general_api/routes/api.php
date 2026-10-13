@@ -47,12 +47,9 @@ Route::post('/login', function (Request $request) {
     
 });
 
+
 Route::get('albums', [AlbumController::class, 'index'])->middleware('auth:sanctum');
 Route::post('albums', [AlbumController::class, 'store'])->middleware('auth:sanctum');
-
-Route::get('albums/user', function(Request $request) {
-    $album = Album::where('user_id', $request->user()->id)->first();
-   return  response()->json(['user' => $album->user()->get()]);
-})->middleware('auth:sanctum');
+Route::get('albums/{album:uuid}/cover', [AlbumController::class, 'showCover'])->middleware('auth:sanctum');
 
 
