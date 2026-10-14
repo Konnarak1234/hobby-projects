@@ -48,10 +48,16 @@ Route::post('/login', function (Request $request) {
     
 });
 
+Route::middleware('auth:sanctum')->group(function() {
+    
+    // Album endpoint
+    Route::get('albums', [AlbumController::class, 'index']);
+    Route::post('albums', [AlbumController::class, 'store']);
+    Route::get('albums/{album:uuid}/cover', [AlbumController::class, 'showCover']);
 
-Route::get('albums', [AlbumController::class, 'index'])->middleware('auth:sanctum');
-Route::post('albums', [AlbumController::class, 'store'])->middleware('auth:sanctum');
-Route::get('albums/{album:uuid}/cover', [AlbumController::class, 'showCover'])->middleware('auth:sanctum');
+    // Photo endpoint
+    Route::get('albums/{album:uuid}/photos', [PhotoController::class, 'index']);
+    Route::post('albums/{album:uuid}/photos', [PhotoController::class, 'store']);
 
+});
 
-Route::get('photos/{album:uuid}', [PhotoController::class, 'index'])->middleware('auth:sanctum');
