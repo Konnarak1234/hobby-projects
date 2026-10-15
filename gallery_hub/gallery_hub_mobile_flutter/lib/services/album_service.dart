@@ -66,7 +66,7 @@ class AlbumService {
         fields: data,
         headers: header,
         fileField: 'cover_image',
-        filePath: album.coverImage!.path,
+        filePath: album.coverImage!,
       );
 
       final bodyData = jsonDecode(response.body) as Map<String, dynamic>;

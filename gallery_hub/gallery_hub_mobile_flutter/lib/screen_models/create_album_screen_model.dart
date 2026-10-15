@@ -15,7 +15,7 @@ class CreateAlbumScreenModel {
 
   Future<void> createAlbum() async {
     final album = Album(
-      coverImage: coverImage!,
+      coverImage: coverImage!.path,
       title: title!,
       description: description,
       location: location,

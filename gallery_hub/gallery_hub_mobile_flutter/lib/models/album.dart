@@ -14,7 +14,7 @@ class Album {
     this.updated,
   });
 
-  File? coverImage;
+  String? coverImage;
   String? title;
   String? description;
   String? location;
