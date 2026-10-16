@@ -65,7 +65,7 @@ class AlbumController extends Controller
                 'message' => 'This album has no cover image.',
             ], 404);
         }
-
+        
         // 3. Select the correct storage disk
         /** @var FilesystemAdapter $disk */
         //This helps Intelephense understand that $disk is a FilesystemAdapter, which implements the response() method.

@@ -57,6 +57,7 @@ Route::middleware('auth:sanctum')->group(function() {
 
     // Photo endpoint
     Route::get('albums/{album:uuid}/photos', [PhotoController::class, 'index']);
+    Route::get('photos/{photo:uuid}/image', [PhotoController::class, 'showPhoto']);
     Route::post('albums/{album:uuid}/photos', [PhotoController::class, 'store']);
 
 });

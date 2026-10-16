@@ -4,15 +4,46 @@ namespace App\Http\Controllers;
 
 use App\Models\Album;
 use App\Models\Photo;
+use Illuminate\Filesystem\FilesystemAdapter;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
+use Nette\Utils\FileSystem;
+
+// Importants operation on Laravel UploadedFile::class object
+// => UploadedFile::class are auto return from $request->file() as single or [] of files, when client uploading files
+// Down below are some important operations:
+// STORE upload file to laravel storage: $file->store($path, $storage_type)
+// GET Temporary File path: $file->getRealPath()
+// GET File size: $file->getSize()
+// GET File mime type: $file->getMimeType()
+// GET File name: $file->getClientOriginalName()
+// 
+
+// mentally concept how Laravel DB::Transaction(callback) work:
+// DB::beginTransaction();
+
+// try {
+//     $result = /* execute callback */;
+
+//     DB::commit();
+
+//     return $result;
+
+// } catch (\Throwable $e) {
+//     DB::rollBack();
+
+//     throw $e;
+// }
+
+
+
 
 class PhotoController extends Controller
 {
-    public function index(Request $request, Album $album) {
+    public function index(Album $album) {
 
         // checking album ownership
         Gate::authorize('view', $album);
@@ -24,6 +55,24 @@ class PhotoController extends Controller
             'message' => 'photos return succefully',
             'photos' => $photos,
         ]);
+    }
+
+    
+
+    public function showPhoto(Photo $photo) {
+        // implement it soon...
+        Gate::authorize('view', $photo->album);
+
+        /**  @var FilesystemAdapter $disk */ 
+        $disk = Storage::disk('local');
+
+        if(!$disk->exists($photo->file_path)) {
+            return response()->json([
+                'message' => 'Image not found'
+            ], 404);
+        }
+
+        return $disk->response($photo->file_path); // response()->file($file->path($photo->file_path));
     }
 
     public function store(Request $request, Album $album) {
@@ -52,6 +101,7 @@ class PhotoController extends Controller
                 $validated,
                 &$storedPaths
             ) {
+                // global $storedPaths
                 $createdPhotos = [];
 
                 foreach ($request->file('photos') as $index => $file) {
@@ -73,9 +123,12 @@ class PhotoController extends Controller
                     $storedPaths[] = $path;
 
                     // Read image dimensions.
-                    $dimensions = @getimagesize($file->getRealPath());
+                    $dimensions = getimagesize($file->getRealPath());
 
                     // Create photo database record.
+                    // There are distintion between $album->photos, $album->photos()
+                    // 1. $album->photos: return the collection of related Photo model
+                    // 2. $album->photos(): return the Eloquent/relations, which can access to operation such as get(), create(), count()
                     $photo = $album->photos()->create([
                         'title' => $validated['titles'][$index] ?? null,
                         'description' => $validated['descriptions'][$index] ?? null,
@@ -132,3 +185,4 @@ class PhotoController extends Controller
     }
 
 }
+
